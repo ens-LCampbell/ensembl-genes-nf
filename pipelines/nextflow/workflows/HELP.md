@@ -1,30 +1,6 @@
-# Genebuild statistics pipeline
+# Pipeline to run BUSCO (protein and/or genome mode) and/or Omark.
 
-The pipeline provides Busco, Omark completeness scores, calculates statistics for Ensembl website when the core database is available. 
-If only the assembly accession and the taxon id are available the pipeline provide Busco score (mode=genome) for the assembly.
-
-![plot](./plot.jpeg)
-
-Nextflow version nextflow  <= 22.10.1. (21.10.5.5658 currently available on Slurm) 
-
-## Busco pipeline `--run_busco_core`
-
-Busco is a measure of completeness of genome assembly and annotation of the gene set. See the documentation for further details [BUSCO user guide](https://busco.ezlab.org/busco_userguide.html)
-
-## OMArk pipeline `--run_omark`
-  
-OMArk is a software of proteome (protein-coding gene repertoire) quality assessment. It provides measure of proteome completeness, characterize all protein coding genes in the light of existing homologs, and identify the presence of contamination from other species.
-Further information available in the official repo https://github.com/DessimozLab/OMArk
-
-## Ensembl statistics and Beta Metakeys pipeline `--run_ensembl_stats, --run_ensembl_beta_metakeys`
-
-The pipeline calculate core statistics for Ensembl browser.
-
-## Busco NCBI genome pipeline `--run_busco_ncbi`
-
-Option available to check the quality of the genome by running Busco in genome mode.
-
-**Pipeline running parameters:**
+Define the parameters to run the BUSCO & coredb metadata patching pipeline
 
 ## Input/output parameters [REQUIRED]:
 
@@ -103,70 +79,3 @@ Regulated/Hidden parameters not shown (show with --validationShowHiddenParams).
 |-----------|-----------|-----------|-----------|-----------|
 | `omamer_database` | Location of Omark omamer_db on production file system. | `string` |  | True |
 | `omark_singularity_path` | Location of Omark specific singularity SIF image. | `string` |  | True |
-
-
-## Input Requirements
-
-#### `--csvFile`
-The structure of the file can change according to the running options
-| Running mode | csv file format |
-|-----------------|--------|
-| --run_busco_core |  core (header)   | 
-|                  |  <db_name>  |
-| --run_omark |  core  (header)  | 
-|                  |  <db_name>  |
-| --run_busco_ncbi |  gca,taxon_id (header)   | 
-|                  |  <gca>,<taxon_id>  |
-
-For example tu run busco on a list of core dbs the file should be
-|core |
-|db1  |
-|db2  |
-
-### Workflow and Subworkflow DAGs:
-The pipeline MAIN workflow [DAG](./dag-main.svg)
-RUN_BUSCO subworkflow [DAG](./dag-RUN_BUSCO.svg)
-RUN_OMARK subworkflow [DAG](./dag-RUN_OMARK.svg)
-RUN_ENSEMBL_STATS subworkflow [DAG](./dag-RUN_ENSEMBL_STATS.svg)
-PREPARE_METADATA subworkflow [DAG](./dag-PREPARE_METADATA.svg)
-
-#### Pipeline configuration
-### Using the provided nextflow.config
-We are using profiles to be able to run the pipeline on different HPC clusters. The default is `standard`.
-
-* `standard`: uses LSF to run the compute heavy jobs. It expects the usage of `scratch` to use a low latency filesystem.
-* `slurm`: uses SLURM to run the compute heavy jobs. It expects the usage of `scratch` to use a low latency filesystem.
-
-#### Using a local configuration file
-You can use a local config with `-c` to finely configure your pipeline. All parameters can be configured, we recommend setting these ones as well:
-
-* `process.scratch`: The patch to the scratch directory to use
-* `workDir`: The directory where nextflow stores any file
-
-### Information about all the parameters
-
-```bash
-nextflow run ./ensembl-genes-nf/pipelines/nextflow/workflows/main.nf --help, --helpFull, --showHidden
-```
-
-#### Ensembl dependencies
-These are the Ensembl repositories required by this pipeline:
-
-| Repository name | branch | URL|
-|-----------------|--------|----|
-| ensembl | default | https://github.com/Ensembl/ensembl.git |
-| ensembl-analysis | main | https://github.com/Ensembl/ensembl-analysis.git |
-| ensembl-io | default | https://github.com/Ensembl/ensembl-io.git |
-| ensembl-genes | default | https://github.com/Ensembl/ensembl-genes.git |
-
-It is recommended that all the repositories are cloned into the same folder.
-
-Remember that, following the instructions in [Ensembl's Perl API installation](http://www.ensembl.org/info/docs/api/api_installation.html), you will also need to have BioPerl v1.6.924 available in your system. If you do not, you can install it executing the following commands:
-
-```bash
-wget https://github.com/bioperl/bioperl-live/archive/release-1-6-924.zip
-unzip release-1-6-924.zip
-mv bioperl-live-release-1-6-924 bioperl-1.6.924
-```
-
-It is recommended to install it in the same folder as the Ensembl repositories.
