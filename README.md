@@ -5,7 +5,7 @@ If only the assembly accession and the taxon id are available the pipeline provi
 
 ![plot](./plot.jpeg)
 
-Nextflow version nextflow  <= 22.10.1. (21.10.5.5658 currently available on Slurm) 
+Nextflow version nextflow  >= version 24.10.3
 
 ## Busco pipeline `--run_busco_core`
 
@@ -124,11 +124,19 @@ For example tu run busco on a list of core dbs the file should be
 |db2  |
 
 ### Workflow and Subworkflow DAGs:
-The pipeline MAIN workflow [DAG](./dag-main.svg)
-RUN_BUSCO subworkflow [DAG](./dag-RUN_BUSCO.svg)
-RUN_OMARK subworkflow [DAG](./dag-RUN_OMARK.svg)
-RUN_ENSEMBL_STATS subworkflow [DAG](./dag-RUN_ENSEMBL_STATS.svg)
-PREPARE_METADATA subworkflow [DAG](./dag-PREPARE_METADATA.svg)
+The pipeline MAIN workflow ![DAG](./dag-main.svg)
+
+RUN_BUSCO subworkflow:
+![DAG](./dag-RUN_BUSCO.svg)
+
+RUN_OMARK subworkflow:
+![DAG](./dag-RUN_OMARK.svg)
+
+RUN_ENSEMBL_STATS subworkflow:
+![DAG](./dag-RUN_ENSEMBL_STATS.svg)
+
+PREPARE_METADATA subworkflow:
+![DAG](./dag-PREPARE_METADATA.svg)
 
 #### Pipeline configuration
 ### Using the provided nextflow.config
